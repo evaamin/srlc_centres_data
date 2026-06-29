@@ -26,11 +26,9 @@ The easiest way if you're new is **GitHub Desktop** (a free app with buttons ins
 If you're comfortable with the command line instead:
 
 ```bash
-git clone https://github.com/<owner>/srlc_centres_data.git
+git clone https://github.com/evaamin/srlc_centres_data.git
 cd srlc_centres_data
 ```
-
-*(Replace `<owner>` with the actual account name once the repo is shared.)*
 
 Note: You can access the command line through your preferred IDE (VS Code, etc.), through Terminal on macOS, or through Command Prompt, PowerShell, or Git Bash on Windows.
 
