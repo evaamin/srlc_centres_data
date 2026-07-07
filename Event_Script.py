@@ -32,7 +32,8 @@ Purpose:
          Centre text unchanged.
 
 Usage:
-    python clean_events.py input.csv output.xlsx
+    python Event_Script.py input.csv output.xlsx
+    python Event_Script.py input.xlsx output.xlsx   (Excel input now supported too)
 """
 
 import sys
@@ -264,8 +265,25 @@ def consolidate(df: pd.DataFrame) -> pd.DataFrame:
     return result
 
 
+def read_input(input_path: str) -> pd.DataFrame:
+    """
+    Read the raw export, auto-detecting CSV vs Excel instead of assuming CSV.
+
+    An .xlsx/.xls/.xlsm file is a binary/zip format, not text - trying to
+    read it with pd.read_csv() fails with something like:
+        UnicodeDecodeError: 'utf-8' codec can't decode byte 0x86 ...
+    because read_csv attempts to decode raw binary bytes as UTF-8 text.
+    This picks the right reader based on the file extension so either
+    input type just works.
+    """
+    lower = input_path.lower()
+    if lower.endswith((".xlsx", ".xls", ".xlsm")):
+        return pd.read_excel(input_path, dtype=str, keep_default_na=False)
+    return pd.read_csv(input_path, dtype=str, keep_default_na=False)
+
+
 def main(input_path: str, output_path: str):
-    df = pd.read_csv(input_path, dtype=str, keep_default_na=False)
+    df = read_input(input_path)
 
     # --- SAFETY CHECK: warn if this file has a pattern we haven't seen before ---
     warnings = check_for_unexpected_data(df)
@@ -375,6 +393,6 @@ def main(input_path: str, output_path: str):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python clean_events.py <input.csv> <output.xlsx>")
+        print("Usage: python Event_Script.py <input.csv|input.xlsx> <output.xlsx|output.csv>")
         sys.exit(1)
     main(sys.argv[1], sys.argv[2])
